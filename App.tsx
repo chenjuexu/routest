@@ -2,13 +2,22 @@ import * as React from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useLayoutEffect } from 'react';
 import * as Location from "expo-location";
 import { GeofencingEventType } from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { TaskManagerError } from "expo-task-manager";
+
+/*type DefineTaskProps = {
+   error: null | TaskManagerError,
+   data: { 
+      eventType: string;
+      region: string;
+   }
+}
 
 
-TaskManager.defineTask('YOUR_TASK_NAME', ({ data: { eventType, region }, error }) => {
+TaskManager.defineTask('YOUR_TASK_NAME', ({ data: { eventType, region }, error } ) => {
   if (error) {
     // check `error.message` for more details.
     return;
@@ -20,9 +29,13 @@ TaskManager.defineTask('YOUR_TASK_NAME', ({ data: { eventType, region }, error }
   }
 })
 
+/*
+TaskManager.defineTask('TASK_NAME', (
+  { data: { eventType, region }, error }  as DefineTaskProps,
+  ...
+);
 
-
-
+*/
 const LATITUDE = 43.653225;
 const LONGITUDE = -79.383186;
 export default function App() {
@@ -54,18 +67,24 @@ export default function App() {
   const GOOGLE_MAPS_APIKEY = 'AIzaSyBpAexI1D_HPIrR9xz_RqAAKDNlYKmW0Q8';
 
 
-  useEffect(() => {
-    (async () => {
-      console.log("success")
-      let { status } = await Location.requestForegroundPermissionsAsync();
+  useLayoutEffect(() => {
+  (async () => {
+
+      
+     let { status } = await Location.requestForegroundPermissionsAsync();
       console.log(status);
       if (status === 'granted') {
-        await Location.startGeofencingAsync("YOUR_TASK_NAME", [
+
+        /*await Location.startGeofencingAsync("YOUR_TASK_NAME", [
           {
             latitude: 43.7860253, longitude: -79.2936040,"radius": 20,
             //home
-          },]);
+          },]);*/
+          let location = await Location.getCurrentPositionAsync({})
+          console.log(location)
       }
+
+
     })
       
   }, []);
