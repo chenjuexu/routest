@@ -1,45 +1,15 @@
 import * as React from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+//import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import MapViewDirections from 'react-native-maps-directions';
+//import MapViewDirections from 'react-native-maps-directions';
 import { useEffect, useState,useLayoutEffect } from 'react';
 import * as Location from "expo-location";
-import { GeofencingEventType } from 'expo-location';
-import * as TaskManager from 'expo-task-manager';
-import { TaskManagerError } from "expo-task-manager";
-
-/*type DefineTaskProps = {
-   error: null | TaskManagerError,
-   data: { 
-      eventType: string;
-      region: string;
-   }
-}
 
 
-TaskManager.defineTask('YOUR_TASK_NAME', ({ data: { eventType, region }, error } ) => {
-  if (error) {
-    // check `error.message` for more details.
-    return;
-  }
-  if (eventType === GeofencingEventType.Enter) {
-    console.log("You've entered region:", region);
-  } else if (eventType === GeofencingEventType.Exit) {
-    console.log("You've left region:", region);
-  }
-})
-
-/*
-TaskManager.defineTask('TASK_NAME', (
-  { data: { eventType, region }, error }  as DefineTaskProps,
-  ...
-);
-
-*/
 const LATITUDE = 43.653225;
 const LONGITUDE = -79.383186;
 export default function App() {
-  const [coordinates] = useState([
+ /* const [coordinates] = useState([
     {
       latitude: 43.7860253, longitude: -79.2936040,
       //home
@@ -65,35 +35,86 @@ export default function App() {
   const origin = {latitude: 43.791680, longitude: -79.312770};
   const destination = {latitude: 43.785230, longitude: -79.293420};
   const GOOGLE_MAPS_APIKEY = 'AIzaSyBpAexI1D_HPIrR9xz_RqAAKDNlYKmW0Q8';
+*/
+  const [location, setLocation] = useState({});
 
-
-  useLayoutEffect(() => {
-  (async () => {
-
-      
-     let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log(status);
-      if (status === 'granted') {
-
-        /*await Location.startGeofencingAsync("YOUR_TASK_NAME", [
-          {
-            latitude: 43.7860253, longitude: -79.2936040,"radius": 20,
-            //home
-          },]);*/
-          let location = await Location.getCurrentPositionAsync({})
-          console.log(location)
+  useEffect(() => {
+    /*
+  (async () => {     
+    let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+       console.log('Permission to access location was denied');
+        return;
       }
-
-
-    })
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location)//not working 
+    })*/
+    /*const foo=async () => {     
+      let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+         console.log('Permission to access location was denied');
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        console.log(location)
+      }
+      foo();//output:Permission to access location was denied
+      */
+      // the below way use usestate,sater way
+/*const foo=async () => {     
+      let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+         console.log('Permission to access location was denied');
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync();
+        setLocation(location)
+        console.log(location)// working,but two output LocationObject
+      }
+      foo();
       
-  }, []);
+*/
 
- 
+/*const foo=async () => {     
+      
+        let location = await Location.getCurrentPositionAsync();
+        setLocation(location)
+        console.log(location)// empty output
+      }
+    
+      */
+
+
+ /*(async () => {     
+    let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+       console.log('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location)//not show
+    })*/
+
+   /* const foo=async () => {     
+    
+        let location = await Location.getCurrentPositionAsync({});
+        console.log(location)
+      }
+      foo();//not show
+      */
+
+  }, []);
+  let text = 'Waiting..';
+  if (location) {
+    text = JSON.stringify(location);
+  }
 
   return (
     <View style={styles.container}>
-      <MapView
+       <Text>{text}</Text> 
+       {console.log('a')/*add this to know wen to paiting for browser */ }
+       {console.log(location)}
+      {/*<MapView
         style={styles.maps}
         provider={"google"}
         initialRegion={{
@@ -115,7 +136,7 @@ export default function App() {
         <Marker coordinate={coordinates[1]} />
         <Marker coordinate={coordinates[2]} />
         <Marker coordinate={coordinates[3]} />
-      </MapView>
+      </MapView>*/}
     </View>
   );
 
@@ -123,9 +144,63 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  maps: {
+  /*maps: {
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
-  },
+  },*/
 })
+
+
+
+
+/*
+
+below is the not safe way to console within useeffect promiste
+
+import React ,{useEffect,useState}from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import * as Location from "expo-location";
+
+
+export default function App() {
+
+
+   useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+
+      if (status !== 'granted') {
+       console.log('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+console.log(location)
+   
+   }
+    )();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>To share a photo from your phone with a friend, just press the button below!</Text>    
+      {console.log('a')}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+*/
