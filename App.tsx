@@ -1,15 +1,20 @@
 import * as React from 'react';
-//import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-//import MapViewDirections from 'react-native-maps-directions';
+import MapViewDirections from 'react-native-maps-directions';
 import { useEffect, useState,useLayoutEffect } from 'react';
 import * as Location from "expo-location";
+import * as turf from '@turf/turf';
+import distance from '@turf/distance';
+import {Units} from '@turf/helpers/dist/js';
+
+
 
 
 const LATITUDE = 43.653225;
 const LONGITUDE = -79.383186;
 export default function App() {
- /* const [coordinates] = useState([
+ const [coordinates] = useState([
     {
       latitude: 43.7860253, longitude: -79.2936040,
       //home
@@ -35,33 +40,12 @@ export default function App() {
   const origin = {latitude: 43.791680, longitude: -79.312770};
   const destination = {latitude: 43.785230, longitude: -79.293420};
   const GOOGLE_MAPS_APIKEY = 'AIzaSyBpAexI1D_HPIrR9xz_RqAAKDNlYKmW0Q8';
-*/
+
   const [location, setLocation] = useState({});
 
   useEffect(() => {
-    /*
-  (async () => {     
-    let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-       console.log('Permission to access location was denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location)//not working 
-    })*/
-    /*const foo=async () => {     
-      let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-         console.log('Permission to access location was denied');
-          return;
-        }
-        let location = await Location.getCurrentPositionAsync({});
-        console.log(location)
-      }
-      foo();//output:Permission to access location was denied
-      */
-      // the below way use usestate,sater way
-/*const foo=async () => {     
+  
+const foo=async () => {     
       let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
          console.log('Permission to access location was denied');
@@ -70,38 +54,32 @@ export default function App() {
         let location = await Location.getCurrentPositionAsync();
         setLocation(location)
         console.log(location)// working,but two output LocationObject
+        var from = turf.point([location.coords.latitude,  location.coords.longitude]);
+        var to = turf.point([coordinates[0].latitude,  coordinates[0].longitude]);
+
+        /*1 var options = {units: 'miles' as const} ;
+        var distance = turf.distance(from, to, options);
+        reference:https://stackoverflow.com/questions/37978528/typescript-type-string-is-not-assignable-to-type
+
+        https://stackoverflow.com/questions/37978528/typescript-type-string-is-not-assignable-to-type
+
+        what is "?:" in typescript:https://stackoverflow.com/questions/63522675/what-is-the-difference-between-and-in-typescript-object-definitions
+        */
+        /*2 var distance = turf.distance(from, to, { units: 'meters' })*/
+        /*3 
+        outofdate,not working;typescript not like javascript which change slowly
+        type Units =typeof Units ;
+       
+        var mytype:string='meters';
+        var options:Units=mytype as Units
+        
+        var distance = turf.distance(from, to, options)*/
+        //;
+        var distance = turf.distance(from, to, { units: 'meters' })
+        console.log(distance)
       }
       foo();
-      
-*/
 
-/*const foo=async () => {     
-      
-        let location = await Location.getCurrentPositionAsync();
-        setLocation(location)
-        console.log(location)// empty output
-      }
-    
-      */
-
-
- /*(async () => {     
-    let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-       console.log('Permission to access location was denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location)//not show
-    })*/
-
-   /* const foo=async () => {     
-    
-        let location = await Location.getCurrentPositionAsync({});
-        console.log(location)
-      }
-      foo();//not show
-      */
 
   }, []);
   let text = 'Waiting..';
@@ -114,7 +92,7 @@ export default function App() {
        <Text>{text}</Text> 
        {console.log('a')/*add this to know wen to paiting for browser */ }
        {console.log(location)}
-      {/*<MapView
+      <MapView
         style={styles.maps}
         provider={"google"}
         initialRegion={{
@@ -136,7 +114,7 @@ export default function App() {
         <Marker coordinate={coordinates[1]} />
         <Marker coordinate={coordinates[2]} />
         <Marker coordinate={coordinates[3]} />
-      </MapView>*/}
+      </MapView>
     </View>
   );
 
@@ -148,59 +126,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  /*maps: {
+  maps: {
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
-  },*/
-})
-
-
-
-
-/*
-
-below is the not safe way to console within useeffect promiste
-
-import React ,{useEffect,useState}from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import * as Location from "expo-location";
-
-
-export default function App() {
-
-
-   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-
-
-      if (status !== 'granted') {
-       console.log('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-console.log(location)
-   
-   }
-    )();
-  }, []);
-
-  return (
-    <View style={styles.container}>
-      <Text>To share a photo from your phone with a friend, just press the button below!</Text>    
-      {console.log('a')}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-});
-
-*/
+})
